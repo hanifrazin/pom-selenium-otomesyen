@@ -19,7 +19,7 @@ def setup():
 
 
 @pytest.mark.positive
-def test_login(setup):
+def test_login_success(setup):
     '''
     Login dengan data yang benar
     '''
@@ -54,12 +54,12 @@ def test_login_other_user(setup, user):
     title = inventory.check_title()
     assert title == InventoryData.title
 
-    url_now = inventory.check_url()
-    assert url_now == InventoryData.url
+    url_invent = inventory.check_url_inventory()
+    assert url_invent == InventoryData.url
 
 
 @pytest.mark.positive
-def test_login_blocked(setup):
+def test_login_locked(setup):
     '''
     Login dengan data blocked
     '''
@@ -67,19 +67,19 @@ def test_login_blocked(setup):
     login = LoginPages(setup)
 
     login.clear_field()
-    login.input_username(LoginData.blocked_user)
+    login.input_username(LoginData.locked_user)
     login.input_password(LoginData.password)
     login.click_login_button()
 
     assert login.error_username(), LoginData.el_neg_display
     assert login.error_password(), LoginData.el_neg_display
     assert login.error_box(), LoginData.el_neg_display
-    assert login.error_msg(), LoginData.blocked_error_msg
+    assert login.error_msg(), LoginData.locked_error_msg
 
 
 @pytest.mark.negative
 @pytest.mark.parametrize('username,password,error_msg', LoginData.creds_neg_list)
-def test_login_neg(setup, username, password, error_msg):
+def test_login_invalid_data(setup, username, password, error_msg):
     '''
     Login dengan credential negative
     '''
@@ -96,3 +96,19 @@ def test_login_neg(setup, username, password, error_msg):
     assert login.error_box(), LoginData.el_neg_display
     assert login.error_msg() == error_msg
 
+
+@pytest.mark.negative
+def test_access_inventory(setup):
+    '''
+    Langsung akses page inventory tanpa login dulu
+    '''
+
+    inventory = InventoryPages(setup)
+    login = LoginPages(setup)
+
+    inventory.live_access_without_login()
+    assert login.cek_url_login() == LoginData.url[0]
+    assert login.error_username(), LoginData.el_neg_display
+    assert login.error_password(), LoginData.el_neg_display
+    assert login.error_box(), LoginData.el_neg_display
+    assert login.error_msg() == InventoryData.forbidden_access_page

@@ -30,3 +30,6 @@ class LoginPages:
     def clear_field(self):
         self.driver.find_element(By.ID, LoginLocators.username_input).clear()
         self.driver.find_element(By.ID, LoginLocators.password_input).clear()
+
+    def cek_url_login(self):
+        return self.driver.current_url
