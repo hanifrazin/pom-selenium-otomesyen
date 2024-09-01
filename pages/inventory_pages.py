@@ -16,6 +16,6 @@ class InventoryPages:
         url = self.driver.current_url
         return url
 
-    def live_access_without_login(self):
-        return self.driver.get(InventoryData.url)
+    def live_access_without_login(self, url):
+        return self.driver.get(url)
 

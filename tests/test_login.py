@@ -55,7 +55,7 @@ def test_login_other_user(setup, user):
     assert title == InventoryData.title
 
     url_invent = inventory.check_url_inventory()
-    assert url_invent == InventoryData.url
+    assert url_invent == InventoryData.list_url[0][0]
 
 
 @pytest.mark.positive
@@ -98,7 +98,8 @@ def test_login_invalid_data(setup, username, password, error_msg):
 
 
 @pytest.mark.negative
-def test_access_inventory(setup):
+@pytest.mark.parametrize('url, validasi', InventoryData.list_url)
+def test_access_forbidden_page(setup, url, validasi):
     '''
     Langsung akses page inventory tanpa login dulu
     '''
@@ -106,9 +107,9 @@ def test_access_inventory(setup):
     inventory = InventoryPages(setup)
     login = LoginPages(setup)
 
-    inventory.live_access_without_login()
+    inventory.live_access_without_login(url)
     assert login.cek_url_login() == LoginData.url[0]
     assert login.error_username(), LoginData.el_neg_display
     assert login.error_password(), LoginData.el_neg_display
     assert login.error_box(), LoginData.el_neg_display
-    assert login.error_msg() == InventoryData.forbidden_access_page
+    assert login.error_msg() == validasi
